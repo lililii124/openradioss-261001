@@ -1,5 +1,9 @@
 # Getting Started
 
+For this repository, follow [Building and running this source snapshot](BUILDING.md).
+It uses the included dependencies and MiniQA example models. The original GUI
+walkthrough below refers to the former upstream binary distribution.
+
 This describes the easiest way to install OpenRadioss on your computer and launch a computation.
 
 This will work on most Intel and AMD computers on Windows and Linux.

@@ -2,6 +2,7 @@ cbuild_*
 vs_build*
 .vs
 exec
+work/
 *.swp
 *.swo
 *~
@@ -30,7 +31,6 @@ engine/extlib/v3*
 engine/extlib/GraphBLAS/
 .vscode/settings.json
 *.sif
-extlib/**
 extlib.zip
 *.F.json
 *.F90.json

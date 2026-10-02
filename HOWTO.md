@@ -1,5 +1,9 @@
 # Building OpenRadioss
 
+For this source snapshot, start with [the Windows and Linux build instructions](doc/BUILDING.md).
+The helper scripts use the input readers and dependencies included in this repository.
+The platform notes below describe additional compiler and solver configurations.
+
 * [Build environment on Linux](#build-environment-on-linux)
   * [System prerequisites](#system-prerequisites)
   * [Compiler and development tools](#compiler-and-development-tools)

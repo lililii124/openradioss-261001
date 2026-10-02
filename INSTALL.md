@@ -1,5 +1,8 @@
 # How to run OpenRadioss
 
+For the bundled Linux/WSL build and a runnable example, see
+[BUILDING.md](doc/BUILDING.md).
+
 OpenRadioss is made of:
 
 * OpenRadioss Starter that checks the model and splits the mesh
@@ -39,7 +42,7 @@ Set the following environment variables:
         export RAD_CFG_PATH=$OPENRADIOSS_PATH/hm_cfg_files
         export RAD_H3D_PATH=$OPENRADIOSS_PATH/extlib/h3d/lib/linux64
         export OMP_STACKSIZE=400m
-        export LD_LIBRARY_PATH=$OPENRADIOSS_PATH/extlib/hm_reader/linux64/:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=$OPENRADIOSS_PATH/exec:$OPENRADIOSS_PATH/extlib/hm_reader/linux64/:$LD_LIBRARY_PATH
 
 ### Environment variables settings under Windows cmd shell
 
