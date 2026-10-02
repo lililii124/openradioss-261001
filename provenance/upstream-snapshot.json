@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/lililii124/openradioss-261001",
+  "original_upstream": "https://github.com/OpenRadioss/OpenRadioss",
+  "upstream_ref": "main",
+  "upstream_source_date": "2026-09-29",
+  "upstream_commit": "1a0d691b82bd4f94a3bc2399682551e84e1d5fa4",
+  "upstream_tree": "66e173d1e043b341b14a7fe984c1a26c1d36a235",
+  "upstream_parent": "e386ba1a7f618be69cc7a16fe45507aff55c075c",
+  "preserved_commit_count": 5149,
+  "tracked_file_count": 10562,
+  "history_is_shallow": false,
+  "original_commit_author": {
+    "git_name": "yz",
+    "github_login": "lililii124"
+  },
+  "original_commit_committer": {
+    "git_name": "sebastienVilleneuve",
+    "github_login": "sebastienVilleneuve"
+  },
+  "original_commit_signature_verified": false,
+  "original_commit_signature_reason": "unsigned",
+  "scope": "Latest upstream source snapshot preserved in this community repository, not a claim of the latest official release."
+}
