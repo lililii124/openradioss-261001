@@ -494,6 +494,9 @@ C N=6  : Abort with system Error (return code=3)
 C N=7  : Exiting only - errors before MPP_INIT or after MPI_FINALIZE
 C ----------------------------------------------
 
+      ! Early command-line errors precede output and user-library allocation.
+      IF (N == 7) CALL MY_EXIT(2)
+
 
 C ----------------------------------------------
 C TEMPO FILES Clean

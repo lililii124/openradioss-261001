@@ -799,6 +799,7 @@ C-----------------------------------------------
 #elif 1
         CALL PRHELPINFO(ERRN,EMSG,SMSG)
 #endif
+        IF (ERRN == 0) CALL MY_EXIT(0)
         CALL ARRET(7)
         END
 
