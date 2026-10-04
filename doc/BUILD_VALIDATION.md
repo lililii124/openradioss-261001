@@ -1,6 +1,26 @@
 # Build validation
 
-Checked on 2026-10-02 with double precision, SMP and one solver thread:
+## v82-hybrid update, 2026-10-04
+
+Starter and Engine were rebuilt from the updated source ZIP on Windows and
+Linux, using the toolchains below, double precision and SMP. Both platforms
+ran the same nine MiniQA cases with their original references and tolerances.
+
+The twisted-beam H3D output contained five readable frames with 172 nodes each.
+On each platform, all 2,580 displacement components, node IDs and frame times
+were identical to that platform's previous v67-writer result. Every displacement
+value was finite. The writer wrapper retains the declarations in the bundled
+export header; H3D import now uses the recovered public import header.
+
+Both builds still reject automatic `/ALE/STRUCTURED_MESH` generation with a
+diagnostic and exit status 2. The explicit 27-node, 8-element ALE mesh completed
+Starter and Engine on both platforms. Source files and dependencies in the test
+directories were checked against the updated source ZIP.
+
+## Earlier recovery checks
+
+The original recovery used v67 common libraries and the recovered input readers.
+It was checked on 2026-10-02 with double precision, SMP and one solver thread:
 
 | Platform | Toolchain | Solver checks |
 | --- | --- | --- |
@@ -12,6 +32,15 @@ The selected MiniQA cases are `1.01`, `1.03`, `1.04`, `1.05`, `1.10`, `1.17`,
 contact, plasticity, SPH, an equation of state and the twisted-beam smoke model.
 References and tolerances were unchanged. The SPH include file needed its
 copyright header marked as comments before the reader could parse the model.
+
+On 2026-10-03, the [GitHub source ZIP at `c26692c5a`](https://codeload.github.com/lililii124/openradioss-261001/zip/c26692c5a0e2947e876ad93a4dda3c4abf5cb1a6)
+was extracted into empty directories on both platforms. The archive's original
+build helpers compiled Starter and Engine, and the same nine MiniQA cases
+remained within their existing reference tolerances. The documented twisted-beam
+commands also completed on both platforms. Separate H3D runs produced five
+frames in the solver logs, with files readable by each bundled H3D reader.
+The Windows build used Visual Studio 2022 C++ Build Tools and a Windows SDK
+alongside the oneAPI toolchain listed above.
 
 Additional checks:
 
@@ -34,6 +63,6 @@ Additional checks:
 - Engine help returns 0; invalid command-line arguments return 2 without the
   early-startup crash observed before the fix.
 
-These checks cover the configurations above. They do not establish equivalence
-to the unavailable v82 package or validate every solver option. See
+These checks cover the configurations above; they do not validate every solver
+option or establish equivalence to the original complete v82 distribution. See
 [Building and running](BUILDING.md) for compatibility limits and commands.

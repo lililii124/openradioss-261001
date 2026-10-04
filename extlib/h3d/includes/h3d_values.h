@@ -1,12 +1,12 @@
-//Copyright>    Altair H3D software ("H3D")
-//Copyright>    Copyright 1997-2021 Altair Engineering Inc.
+//Copyright>    H3D software ("H3D")
+//Copyright>    Copyright 2026 Siemens Industry Software Inc. (“SISW”).
 //Copyright>    
-//Copyright>    Altair Engineering Inc. grants to third parties limited permission to 
+//Copyright>    SISW Engineering Inc. grants to third parties limited permission to 
 //Copyright>    use H3D solely in connection with OpenRadioss software. 
 //Copyright>      
 //Copyright>    H3D IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
 //Copyright>    INCLUDING, BUT NOT LIMITED TO, THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR 
-//Copyright>    A PARTICULAR PURPOSE, AND NONINFRINGEMENT.  IN NO EVENT SHALL ALTAIR ENGINEERING
+//Copyright>    A PARTICULAR PURPOSE, AND NONINFRINGEMENT.  IN NO EVENT SHALL SISW ENGINEERING
 //Copyright>    INC. OR ITS AFFILIATES BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, 
 //Copyright>    WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR
 //Copyright>    IN CONNECTION WITH H3D OR THE USE OR OTHER DEALINGS IN H3D.

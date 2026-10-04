@@ -1,5 +1,8 @@
 # OpenRadioss
 
+For the community continuation of OpenRadioss, visit
+[OpenCourant](https://github.com/OpenCourant/OpenCourant).
+
 ## What is OpenRadioss?
 
 **OpenRadioss** is an open-source finite element solver for highly nonlinear
@@ -12,8 +15,8 @@ composites, polymers, concrete and other engineering materials. Applications
 include vehicle safety, lightweight structures, manufacturing, protective
 systems and coupled fluid–structure simulations.
 
-This community repository preserves the upstream source snapshot dated
-**2026-09-29**, with recovered build dependencies for Windows and Linux.
+This repository preserves the upstream source snapshot dated **2026-09-29**,
+with Windows and Linux build dependencies from OpenCourant's `v82-hybrid` package.
 
 ## Getting started
 
@@ -21,7 +24,7 @@ This community repository preserves the upstream source snapshot dated
 - [Build and run this repository](doc/BUILDING.md)
 - [Compiler and platform guide](HOWTO.md)
 - [Solver execution guide](INSTALL.md)
-- [Source packages](https://github.com/lililii124/openradioss-261001/releases)
+- [Download source ZIP](https://github.com/lililii124/openradioss-261001/archive/refs/heads/main.zip)
 
 ### Build on Linux or WSL
 
@@ -42,7 +45,9 @@ The build produces double-precision Starter and SMP Engine executables in
 
 ### Build on Windows
 
-From an Intel oneAPI command prompt with CMake, Ninja, Python 3 and MKL available:
+Install Intel oneAPI with MKL, Visual Studio C++ Build Tools and a Windows SDK,
+plus CMake, Ninja and Python 3. Extract the source to a short path without spaces,
+then run from a oneAPI command prompt:
 
 ```bat
 build_windows_compat.bat 8

@@ -20,7 +20,7 @@ def main():
               file=sys.stderr)
         return 1
 
-    print(f"Using bundled external libraries (source revision {manifest['revision']}).")
+    print(f"Using bundled external libraries ({manifest['package_tag']}).")
     return 0
 
 

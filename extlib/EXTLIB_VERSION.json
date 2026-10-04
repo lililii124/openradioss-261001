@@ -55,7 +55,5 @@
     }
   },
   "package_tag": "v82-hybrid",
-  "package_date": "2026-10-04",
-  "url": "https://github.com/OpenCourant/extlib/releases/download/v82-hybrid/extlib.zip",
-  "sha256": "eee964c4e05037bc856eb387fb8276de33cc58d040c010a2d2934c7f1a16a5e8"
+  "package_date": "2026-10-04"
 }

@@ -1,10 +1,17 @@
 # Building and running
 
-The original v82 dependency archive is unavailable. This tree supplies recovered
-dependencies and explicit compatibility options for the available input readers.
-Their versions, origins and checksums are recorded in `EXTLIB_VERSION.json`.
-They are not the original v82 package. See the [validation record](BUILD_VALIDATION.md)
-for the actual compilation and solver checks.
+This tree includes OpenCourant's
+[v82-hybrid dependencies](https://github.com/OpenCourant/extlib/releases/tag/v82-hybrid):
+the recovered v82 public libraries and H3D interfaces, combined with the
+previously recovered input readers. It builds without downloading external
+libraries. This is not the original complete v82 distribution; reader compatibility
+options are still required. Origins are recorded in `EXTLIB_VERSION.json`.
+See the [validation record](BUILD_VALIDATION.md) for compilation and solver checks.
+
+Use the [current source ZIP](https://github.com/lililii124/openradioss-261001/archive/refs/heads/main.zip)
+or clone `main`. The preserved `upstream-20260929` release predates the dependency
+recovery. Extract or clone into a short path without spaces; some upstream
+compiler flags do not support paths containing spaces.
 
 ## Supported build configurations
 
@@ -69,8 +76,13 @@ cd "$OPENRADIOSS_PATH/work/twisted_beam"
 
 ## Windows
 
-Use an Intel oneAPI command prompt with the Fortran/C/C++ compilers and MKL
-enabled, plus CMake, Ninja and Python 3 on `PATH`. Run from the repository root:
+Install Visual Studio C++ Build Tools with the MSVC toolchain and a Windows SDK,
+then Intel oneAPI with the Fortran/C/C++ compilers and MKL. The verified setup
+uses Visual Studio 2022 and oneAPI 2023.0.0. Use a oneAPI command prompt with those
+components enabled, plus CMake, Ninja and Python 3 on `PATH`.
+
+For a ZIP download, no Git checkout is needed. Run from the extracted repository
+root (for example `C:\OpenRadioss`):
 
 ```bat
 build_windows_compat.bat 8
@@ -95,7 +107,7 @@ cd work\twisted_beam
 ## Dependencies and compatibility options
 
 The common dependencies come from
-[OpenRadioss_extlib v67](https://github.com/AgenteScontro/OpenRadioss_extlib/tree/f10f11a4ba6943e2d950ac12da47461ea7b8f05d).
+[OpenCourant's recovered v82 tree](https://github.com/OpenCourant/extlib/tree/upstream-v82).
 They include LAPACK, METIS, zlib, MD5, Boost, ExprTk, and H3D headers and libraries.
 The input readers were recovered separately from public OpenRadioss runtime
 packages. Original notices are preserved with the corresponding files.
@@ -109,20 +121,21 @@ The helper scripts select the required CMake options. For direct CMake builds:
 | `HM_READER_LEGACY_PART_API` | `ON` | `OFF` |
 | `HM_READER_NO_STRUCTURED_ALE` | `ON` | `ON` |
 
-These compatibility options default to `OFF` in Starter. A newer matching reader
-can use the upstream interfaces by leaving them off. Replacing a reader requires
-both an interface check and solver validation; changing its filename is not
-sufficient. The included OpenReader source does not yet provide every interface
-required by this Starter and is not selected by these scripts.
+The three `HM_READER_*` compatibility options default to `ON` in Starter, matching
+the recovered Linux reader. The Windows helper explicitly sets the part option
+to `OFF` because that reader provides the corresponding interface. The included
+OpenReader source does not yet provide every interface required by this Starter
+and is not selected by these scripts.
 
-### Switching to a recovered v82 package
+### Using a newer input reader
 
-If a matching v82 package becomes available, replace the libraries and update
-the manifest's source, required files and checksums. The current loader only
-checks local files; changing the version number does not download a package.
-Update the helper scripts to set all three `HM_READER_*` compatibility options
-to `OFF`, then build in a fresh directory. On Windows, replace the reader DLL
-in `exec` too, using the import library supplied with that DLL.
+The v82-hybrid package retains the older input readers. Its version number alone
+does not justify disabling reader compatibility options. For a newer reader,
+check the required interfaces and run the solver cases before changing those
+options. Update the libraries and their manifest entries, then build in a fresh
+directory. On Windows, replace the reader DLL in `exec` too, using the import
+library supplied with that DLL. The loader only checks local files; changing
+the manifest does not download a package.
 
 Check the H3D wrappers against the new SDK headers and rerun the solver cases.
 Verify generated node coordinates and element volumes before enabling automatic
