@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+C_COMPILERS='CMake_Compilers'
+C_COMPILERS_C='CMake_Compilers_c'
 
 function my_help()
 {
@@ -8,13 +11,13 @@ function my_help()
   echo " " 
   echo " Use with arguments : "
   echo " -arch=[build architecture]"
-  if  [ -f CMake_Compilers/platforms.txt ]
+  if  [[ -f "${C_COMPILERS}/platforms.txt" ]]
   then
-       cat CMake_Compilers/platforms.txt 
+       cat "${C_COMPILERS}/platforms.txt" 
   fi
-  if  [ -f CMake_Compilers_c/platforms.txt ]
+  if  [[ -f "${C_COMPILERS_C}/platforms.txt" ]]
   then
-       cat CMake_Compilers_c/platforms.txt 
+       cat "${C_COMPILERS_C}/platforms.txt" 
   fi
   echo " -prec=[dp|sp]                       : set precision - dp (default) |sp "
   echo " -static-link                        : Fortran, C & C++ runtime are linked in binary"
@@ -54,21 +57,21 @@ no_rr_clean=0
 no_python=0
 changelist=00000
 cf=""
-dc=""
+dc=()
 qd=""
 ADF=""
 static_link=0
 number_of_arguments=$#
 clean=0
-verbose=""
+verbose=()
 st_vers="starter"
 com=0
 release=0
 ad=none
 use_openreader=0
-orb=""
+orb=()
 
-if [ "`uname -m`" == "x86_64" ]
+if [[ "$(uname -m)" == "x86_64" ]]
 then
   built_in_arch=linux64
 else
@@ -76,162 +79,134 @@ else
 fi
 
 
-if [ $number_of_arguments = 0 ]
+if (( number_of_arguments == 0 ))
 then
   my_help
   exit 1
- 
 else
+  for var in "$@"
+  do
+    IFS='=' read -r arg value <<< "$var"
+    case "$arg" in
+      '-arch')
+          arch="${value}"
+          got_arch=1
+          ;;
+      '-prec')
+          prec="${value}"
+          if [[ "${prec}" == 'sp' ]]
+          then
+            suffix=_sp
+          fi
+          ;;
+      '-addflag')
+          ad="${value}"
+          export ADFL=${ad}
+          ;;
+      '-debug')
+          debug="${value}"
+          ddebug=_${debug}
+          case "$debug" in
+            0) ddebug="" ;;
+            1) ddebug="_db" ;;
+            2) debug=1
+               sanitize=1
+               ddebug="_db2"
+               ;;
+          esac
+        ;;
+      '-nt')
+          threads="${value}"
+          ;;
+      '-open_reader')
+          use_openreader=1
+          ;;
+      '-static-link')
+          static_link=1
+          ;;
+      '-no-python')
+          no_python=1
+          ;;
+      '-release')
+          release=1
+          ;;
+      '-verbose')
+          verbose=( "VERBOSE=1" )
+          ;;
+      '-clean')
+          clean=1
+          ;;
+      '-c')
+          com=1
+          dc=( "-DCOM=1" )
+          cf="_c"
+          orb=( "-c" )
+          vers="$(grep version "${C_COMPILERS_C}/cmake_st_version.txt" | cut -d '"' -f2)"
+          st_vers="s_${vers}"
+          ;;
+      *)
+          echo "Unknown argument: $arg"
+          my_help
+          exit 1
+          ;;
+      esac
+  done
 
-   for var in "$@"
-   do
-       arg=`echo $var|awk -F '=' '{print $1}'`
+  if (( got_arch == 0 ))
+  then
+    echo " " 
+    echo " --- Error "
+    echo " No architecture flag set ! "
+    echo " -arch=[architecture]" 
+    echo "       Available arch:"
+    my_help
+    exit 1
+  fi
 
-       if [ "$arg" == "-arch" ]
-       then
-         arch=`echo $var|awk -F '=' '{print $2}'`
-         got_arch=1
-       fi
+  if (( release == 1 ))
+  then
+    debug=0
+    ddebug=""
+  fi
 
-       if [ "$arg" == "-prec" ]
-       then
-         prec=`echo $var|awk -F '=' '{print $2}'`
-         if [ ${prec} = 'sp' ]
-         then
-           suffix=_sp
-         fi
-       fi
+  starter_exec=${st_vers}_${arch}${dmpi}${suffix}${ddebug}
+  build_directory=cbuild_${starter_exec}${cf}
 
-       if [ "$arg" == "-addflag" ]
-       then
-         ad=`echo $var|awk -F '-addflag=' '{ print $2}'`
-         export ADFL=${ad}
-       fi
+  echo " " 
+  echo " Build OpenRadioss Starter "
+  echo " --------------------------"
+  echo " Build Arguments :"
+  echo " arch =                 : $arch"
+  echo " precision =            : $prec"
+  echo " debug =                : $debug"
+  echo " static_link =          : $static_link"
+  if (( use_openreader == 1 ))
+  then
+      echo " "
+      echo " linking with open_reader"
+  fi
 
-       if [ "$arg" == "-debug" ]
-       then
-         debug=`echo $var|awk -F '=' '{print $2}'`
-         ddebug=_${debug}
-
-         if [ $debug == 0 ]
-         then
-           ddebug=""
-         fi
-
-         if [ $debug == 1 ]
-         then
-           ddebug="_db"
-         fi
-         if [ $debug == 2 ]
-         then
-           debug=1
-           sanitize=1
-           ddebug="_db2"
-         fi 
-       fi
-
-       if [ "$arg" == "-nt" ]
-       then
-         threads=`echo $var|awk -F '=' '{print $2}'`
-       fi
-
-       if [ "$arg" == "-open_reader" ]
-       then
-         use_openreader=1
-       fi
-
-       if [ "$arg" == "-static-link" ]
-       then
-         static_link=1
-       fi
-
-       if [ "$arg" == "-no-python" ]
-       then
-         no_python=1
-       fi
-
-       if [ "$arg" == "-release" ]
-       then
-         release=1
-       fi
-
-       if [ "$arg" == "-verbose" ]
-       then
-         verbose="VERBOSE=1"
-       fi
-
-       if [ "$arg" == "-clean" ]
-       then
-         clean=1
-       fi
-
-       if [ "$arg" == "-c" ]
-       then
-         com=1
-         dc="-DCOM=1"
-         cf="_c"
-         orb="-c"
-         vers=`grep version CMake_Compilers_c/cmake_st_version.txt | awk -F '\"' '{print $2}' `
-         st_vers="s_${vers}"
-       fi
-
-   done
-
-   if [ $got_arch == 0 ] 
-   then
-     echo " " 
-     echo " --- Error "
-     echo " No architecture flag set ! "
-     echo " -arch=[architecture]" 
-     echo "       Available arch:"
-     my_help
-     exit 1
-   fi
-
-   if [ $release == 1 ]
-   then
-     debug=0
-     ddebug=""
-   fi 
-
-starter_exec=${st_vers}_${arch}${dmpi}${suffix}${ddebug}
-build_directory=cbuild_${starter_exec}${cf}
-
-   echo " " 
-   echo " Build OpenRadioss Starter "
-   echo " --------------------------"
-   echo " Build Arguments :"
-   echo " arch =                 : " $arch
-   echo " precision =            : " $prec
-   echo " debug =                : " $debug
-   echo " static_link =          : " $static_link
-   if [ $use_openreader == 1 ]
-   then
-       echo " "
-       echo " linking with open_reader"
-   fi
-
-   echo " " 
-   echo " Executable name        : " ${starter_exec}
-   if [ "$ad" != "none" ]  
-   then
-      echo " Addflag                : \"$ad\" "
-   fi
-   echo " "
-   echo " #threads for Makefile : " $threads
-   echo " "
+  echo " " 
+  echo " Executable name        : $starter_exec"
+  if [[ "$ad" != "none" ]]  
+  then
+    echo " Addflag                : \"$ad\" "
+  fi
+  echo " "
+  echo " #threads for Makefile : $threads"
+  echo " "
 fi
 
-if [ $clean = 1 ]
+if (( clean == 1 ))
 then
-   if [ -d ${build_directory} ]
+   if [[ -d "${build_directory}" ]]
    then
      echo "Clean ${build_directory} directory"
-     rm -rf ./${build_directory}
+     rm -rf "./${build_directory}"
    else
      echo "Clean ${build_directory} directory requested but not found"
    fi
-   echo " " 
+   echo " "
    exit 0
 fi
 
@@ -239,15 +214,15 @@ fi
 # OpenReader if -open_reader was set 
 # Build open_reader 
 #
-if [ $use_openreader == 1 ]
+if (( use_openreader == 1 ))
 then
     echo " "
     echo "Build open_reader: ${built_in_arch} "
     echo "----------------"
     cd ../reader
-    ./build_script.bash -arch=${built_in_arch} -nt=${threads} ${orb}
-    return_value=$?
-    if [ $return_value -ne 0 ]
+    ./build_script.bash -arch=${built_in_arch} -nt="${threads}" "${orb[@]}" || return_value=$?
+
+    if (( return_value != 0 ))
     then
        echo " " 
        echo " " 
@@ -259,123 +234,112 @@ then
 fi
 
 # create build directory
-if [ ! -d ../exec ] 
-then
-   mkdir ../exec
-fi
-
+mkdir -p ../exec
 # create build directory
-if [ ! -d ${build_directory} ] 
-then
-   mkdir ${build_directory}
-fi
+mkdir -p "${build_directory}"
 
 
-if [ -f ${build_directory}/${starter_exec} ]
-then
-  echo " -- Remove executable in build_script "
-  rm ${build_directory}/${starter_exec}
-fi
+echo " -- Remove executable in build_script "
+rm -f "${build_directory}/${starter_exec}"
 
-if [ -f ../exec/${starter_exec} ]
-then
-  echo " -- Remove executable in exec "
+echo " -- Remove executable in exec "
  
-  rm ../exec/${starter_exec}
-fi
+rm -f "../exec/${starter_exec}"
+
 echo " "
 
-cd ${build_directory}
+cd "${build_directory}"
 
 # Get compiler settings
-if [ $com = 1 ]
+if (( com == 1 ))
 then
-    if [ -f ../CMake_Compilers_c/cmake_${arch}_compilers.sh ]
-    then
-      source ../CMake_Compilers_c/cmake_${arch}_compilers.sh
-    else
-      echo "-- Error: -arch=${arch} does not exist"
-      echo "-- See help below"
-      echo " " 
-      my_help
-      exit 1
-    fi
+    compiler_script_dir="../${C_COMPILERS_C}"
 else
-    if [ -f ../CMake_Compilers/cmake_${arch}_compilers.sh ]
-    then
-      source ../CMake_Compilers/cmake_${arch}_compilers.sh
-    else
-      echo "-- Error: -arch=${arch} does not exist"
-      echo "-- See help below"
-      echo " " 
-      my_help
-      exit 1
-    fi
+    compiler_script_dir="../${C_COMPILERS}"
 fi
 
-Fortran_path=`which $Fortran_comp`
-C_path=`which $C_comp`
-CPP_path=`which $CPP_comp`
-CXX_path=`which $CXX_comp`
+compiler_script="${compiler_script_dir}/"cmake_${arch}_compilers.sh""
+
+if [[ -f "${compiler_script}" ]]
+then
+    source "${compiler_script}"
+else
+    echo "-- Error: -arch=${arch} does not exist"
+    echo "-- See help below"
+    echo " " 
+    my_help
+    exit 1
+fi
+
+Fortran_path="$(which "$Fortran_comp")"
+C_path="$(which "$C_comp")"
+CPP_path="$(which "$CPP_comp")"
+CXX_path="$(which "$CXX_comp")"
 
 
 # Apply cmake
 
-if [ ${arch} = "win64" ]
+if [[ ${arch} == "win64" ]]
 then
-  Fortran_path_w=`cygpath.exe -m "${Fortran_path}"`
-  C_path_w=`cygpath.exe -m "${C_path}"`
-  CPP_path_w=`cygpath.exe -m "${CPP_path}"`
-  CXX_path_w=`cygpath.exe -m "${CXX_path}"`
-  cmake.exe -G "Unix Makefiles" -Darch=${arch} -Dprecision=${prec} ${DAD} -Ddebug=${debug} -DEXEC_NAME=${starter_exec} ${dc} -Dno_python=${no_python} -Dstatic_link=$static_link -DCMAKE_BUILD_TYPE=Release -DCMAKE_Fortran_COMPILER="${Fortran_path_w}" -DCMAKE_C_COMPILER="${C_path_w}" -DCMAKE_CPP_COMPILER="${CPP_path_w}" -DCMAKE_CXX_COMPILER="${CXX_path_w}" .. 
+  Fortran_path_w="$(cygpath.exe -m "${Fortran_path}")"
+  C_path_w="$(cygpath.exe -m "${C_path}")"
+  CPP_path_w="$(cygpath.exe -m "${CPP_path}")"
+  CXX_path_w="$(cygpath.exe -m "${CXX_path}")"
+  cmake.exe -G "Unix Makefiles" -Darch="${arch}" -Dprecision="${prec}" ${DAD} \
+            -Ddebug="${debug}" -DEXEC_NAME="${starter_exec}" "${dc[@]}" \
+            -Dno_python="${no_python}" -Dstatic_link="${static_link}" \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_Fortran_COMPILER="${Fortran_path_w}" \
+            -DCMAKE_C_COMPILER="${C_path_w}" -DCMAKE_CPP_COMPILER="${CPP_path_w}" \
+            -DCMAKE_CXX_COMPILER="${CXX_path_w}" .. || return_value=$?
 else
-  cmake -Darch=${arch} -Dprecision=${prec} ${DAD} -Ddebug=${debug} -DEXEC_NAME=${starter_exec} -Dstatic_link=$static_link -Dno_python=${no_python} ${dc} -Dsanitize=${sanitize}  -DCMAKE_Fortran_COMPILER=${Fortran_path} -DCMAKE_C_COMPILER=${C_path} -DCMAKE_CPP_COMPILER=${CPP_path} -DCMAKE_CXX_COMPILER=${CXX_path} -DUSE_OPEN_READER=${use_openreader} ..
+  cmake -Darch="${arch}" -Dprecision="${prec}" ${DAD} -Ddebug="${debug}" \
+        -DEXEC_NAME="${starter_exec}" -Dstatic_link="${static_link}" \
+        -Dno_python="${no_python}" "${dc[@]}" -Dsanitize="${sanitize}" \
+        -DCMAKE_Fortran_COMPILER="${Fortran_path}" -DCMAKE_C_COMPILER="${C_path}" \
+        -DCMAKE_CPP_COMPILER="${CPP_path}" -DCMAKE_CXX_COMPILER="${CXX_path}" \
+        -DUSE_OPEN_READER=${use_openreader} .. || return_value=$?
 fi
 
-return_value=$?
-if [ $return_value -ne 0 ]
+if (( return_value != 0 ))
 then
    echo " " 
    echo " " 
    echo "-- Errors in Cmake found"
    cd ..
-   if [ -d ${build_directory} ]
+   if [[ -d "${build_directory}" ]]
    then
      echo "-- Cleaning ${build_directory} directory"
-     rm -rf ./${build_directory}
+     rm -rf "./${build_directory}"
    fi
    echo " " 
    exit 1
 fi
 
-make -j ${threads} ${verbose}
-#ninja -v -j ${threads} -d explain
-return_value=$?
+make -j "${threads}" "${verbose[@]}" || return_value=$?
+#ninja -v -j "${threads}" -d explain || return_value=$?
 
-if [ $debug == 'asan' ]
-then
+case "${debug}" in
+  asan)
     echo " "
     echo "Warning:"
     echo "--------"
     echo "Build was made with debug configuration."
     echo "To enable optimization, add -release flag."
     echo " "
-fi
-
-if [ $debug == 'analysis' ]
-then
-if [ $return_value -eq 0 ]
-then
-    pwd
-    cd ../../scripts
-    python3 ./static_analysis.py starter
-    return_value=$?
-fi
-fi
+    ;;
+  analysis)
+    if (( return_value == 0 ))
+    then
+        pwd
+        cd ../../scripts
+        python3 ./static_analysis.py starter || return_value=$?
+    fi
+    ;;
+esac
 
 
 
-if [ $return_value -ne 0 ]
+if (( return_value != 0 ))
 then
    echo " " 
    echo " " 
