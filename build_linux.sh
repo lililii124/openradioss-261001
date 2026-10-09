@@ -3,7 +3,7 @@
 # This reader cannot generate /ALE/STRUCTURED_MESH; Starter rejects that keyword.
 set -euo pipefail
 
-root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+root=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 jobs=${1:-$(getconf _NPROCESSORS_ONLN)}
 if ! [[ "$jobs" =~ ^[1-9][0-9]*$ ]]; then
     printf 'Usage: bash build_linux.sh [positive number of build jobs]\n' >&2

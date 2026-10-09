@@ -1,11 +1,11 @@
-#!/bin/bash 
-if [ ! -d exec ]; then
-  mkdir exec
-fi
+#!/usr/bin/env bash
+run_file='exec/element_linux_arm64_armflang_sve'
 
-if [ -f exec/element_linux_arm64_armflang_sve ]; then
-  rm exec/element_linux_arm64_armflang_sve
-fi
+mkdir -p exec
 
-armflang -Ofast -march=armv8.2-a+sve -fno-stack-arrays -mcpu=a64fx -fopenmp -g -ffixed-line-length-none -armpl=sve  -static-arm-libs -D COMP_ARMFLANG -I source/include source/*.F -o exec/element_linux_arm64_armflang_sve
+rm -f "${run_file}"
+
+armflang -Ofast -march=armv8.2-a+sve -fno-stack-arrays -mcpu=a64fx -fopenmp \
+         -g -ffixed-line-length-none -armpl=sve  -static-arm-libs \
+         -D COMP_ARMFLANG -I source/include source/*.F -o "${run_file}"
 

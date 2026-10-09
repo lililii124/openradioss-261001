@@ -40,12 +40,12 @@ for SRC in "${!TEMPLATES[@]}"; do
     echo "  fypp $SRC -> $OUT"
     if ! fypp "$SRC" "$OUT"; then
       echo "ERROR: fypp failed on $SRC" >&2
-      ERRORS=$((ERRORS + 1))
+      (( ERRORS++ ))
     fi
   fi
 done
 
-if [[ $ERRORS -gt 0 ]]; then
+if (( ERRORS > 0 )); then
   echo "FAILED: $ERRORS template(s) could not be processed." >&2
   exit 1
 fi

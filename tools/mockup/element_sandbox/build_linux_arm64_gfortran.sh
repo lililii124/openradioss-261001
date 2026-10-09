@@ -1,10 +1,10 @@
-#!/bin/bash 
-if [ ! -d exec ]; then
-  mkdir exec
-fi
+#!/usr/bin/env bash
+run_file='exec/element_linux_arm64_gfortran_sve'
 
-if [ -f exec/element_linux_arm64_gfortran_sve]; then
-  rm exec/element_linux_arm64_gfortran_sve
-fi
+mkdir -p exec
 
-gfortran -O3 -march=armv8-a+sve -fdec-math -fstack-arrays -fopenmp -frounding-math -g -fbacktrace -ffixed-line-length-none  -D COMP_GFORTRAN -I source/include source/*.F -o exec/element_linux_arm64_gfortran_sve
+rm -f "${run_file}"
+
+gfortran -O3 -march=armv8-a+sve -fdec-math -fstack-arrays -fopenmp \
+         -frounding-math -g -fbacktrace -ffixed-line-length-none \
+         -D COMP_GFORTRAN -I source/include source/*.F -o "${run_file}"

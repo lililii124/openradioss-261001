@@ -27,7 +27,7 @@ else
   echo "       DATA BTAG/'CommitID: $GITHUB_SHA'/ "
 fi
 
-if [ $2 = 1 ]; then
+if [ "$2" = 1 ]; then
 echo "       PARAMETER (PMSG=1)"
 echo "       DATA  MSGO/'$6'/"
 echo "       PARAMETER (LEN_MSG=$LEN_MSG)"

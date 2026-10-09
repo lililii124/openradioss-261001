@@ -1,10 +1,10 @@
-#!/bin/bash 
-if [ ! -d exec ]; then
-  mkdir exec
-fi
+#!/usr/bin/env bash
+run_file='exec/element_linux_x64_nfort'
 
-if [ -f exec/element_linux_x64_nfort ]; then
-  rm exec/element_linux_x64_nfort
-fi
+mkdir -p exec
 
-nfort -O3 -fopenmp -fextend-source -fassume-contiguous -fno-matrix-multiply -mno-vector-fma -fno-associative-math -fno-outerloop-unroll -Isource/include source/*.F -o exec/element_linux_x64_nfort
+rm -f "${run_file}"
+
+nfort -O3 -fopenmp -fextend-source -fassume-contiguous -fno-matrix-multiply \
+      -mno-vector-fma -fno-associative-math -fno-outerloop-unroll \
+      -Isource/include source/*.F -o "${run_file}"

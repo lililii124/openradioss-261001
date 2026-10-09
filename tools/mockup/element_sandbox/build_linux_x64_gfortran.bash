@@ -1,13 +1,13 @@
-#!/bin/bash 
-if [ ! -d exec ]; then
-  mkdir exec
-fi
+#!/usr/bin/env bash
+run_file='exec/element_linux_x64_gfortran'
 
-if [ -f exec/element_linux_x64_gfortran ]; then
-  rm exec/element_linux_x64_gfortran
-fi
+mkdir -p exec
 
-echo "building with gfortran - exec/element_linux_x64_gfortran"
-gfortran -O3 -fdec-math -fstack-arrays -fopenmp -frounding-math -g -fbacktrace -ffixed-line-length-none -D COMP_GFORTRAN -I source/include source/*.F -o exec/element_linux_x64_gfortran
+rm -f "${run_file}"
+
+echo "building with gfortran - ${run_file}"
+gfortran -O3 -fdec-math -fstack-arrays -fopenmp -frounding-math -g \
+         -fbacktrace -ffixed-line-length-none -D COMP_GFORTRAN \
+         -I source/include source/*.F -o "${run_file}"
 #
 echo "done"

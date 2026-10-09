@@ -21,14 +21,14 @@ function my_help()
 
 # Script Variables 
 threads=1
-verbose=""
+verbose=()
 clean=0
 arch=none
 com=0
 cs=""
 
 number_of_arguments=$#
-if [ $number_of_arguments = 0 ]
+if (( number_of_arguments == 0 ))
 then
 
    my_help
@@ -38,39 +38,20 @@ else
  
    for var in "$@"
    do
-       arg=`echo $var|awk -F '=' '{print $1}'`
-       if [ "$arg" == "-arch" ]
-       then
-         arch=`echo $var|awk -F '=' '{print $2}'`
-       fi
-
-       if [ "$arg" == "-nt" ]
-       then
-         threads=`echo $var|awk -F '=' '{print $2}'`
-       fi
-
-       if [ "$arg" == "-verbose" ]
-       then
-         verbose="VERBOSE=1"
-       fi
-
-       if [ "$arg" == "-c" ]
-       then
-         com=1
-         cs="_c"
-       fi
-
-       if [ "$arg" == "-clean" ]
-       then
-            clean=1
-       fi
-
+      IFS='=' read -r arg value <<< "$var"
+      case $arg in
+         -arch) arch="${value}" ;;
+         -nt) threads="${value}" ;;
+         -verbose) verbose=( "VERBOSE=1" ) ;;
+         -c) com=1 ; cs="_c" ;;
+         -clean) clean=1 ;;
+      esac
    done
 
 fi
 
 
-if [ $arch ==  "none" ]
+if [[ $arch ==  "none" ]]
 then
    echo " "
    echo "Error: No architecture specified !"
@@ -83,14 +64,14 @@ fi
 build_directory=cbuild_${arch}${db}${cs}
 
 
-if [ $clean = 1 ]
+if (( clean == 1 ))
 then
    echo " "
    echo "Cleaning build directory: ${build_directory}"
    echo " "
-   if [ -d ${build_directory} ] 
+   if [[ -d ${build_directory} ]]
    then
-      rm -rf ${build_directory}
+      rm -rf "${build_directory}"
    fi
    exit 0
 fi
@@ -99,9 +80,9 @@ echo " "
 echo " Build OpenReader "
 echo " -----------------"
 echo " Build Arguments :"
-echo " arch =                 : " $arch
+echo " arch =                 : $arch"
 echo " " 
-echo " threads =              : " $threads
+echo " threads =              : $threads"
 echo " " 
 
 # Load external libraries
@@ -110,38 +91,38 @@ python3 ../Compiling_tools/script/load_extlib.py || exit 1
 
 
 # create build directory
-if [ ! -d ${build_directory} ] 
+if [[ ! -d ${build_directory} ]]
 then
-   mkdir ${build_directory}
+   mkdir "${build_directory}"
 fi
 
-cd ${build_directory}
+cd "${build_directory}"
 
-cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -Darch=${arch}  -Dcom=${com} ..
-return_value=$?
-if [ $return_value -ne 0 ]
+return_value=0
+
+cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -Darch="${arch}"  -Dcom="${com}" .. || return_value=$?
+if (( return_value != 0 ))
 then
    echo " " 
    echo " " 
    echo "-- Errors in Cmake found"
    cd ..
-   if [ -d ${build_directory} ]
+   if [[ -d ${build_directory} ]]
    then
-     echo "-- Cleaning ${build_directory} directory"
-     rm -rf ./${build_directory}
+      echo "-- Cleaning ${build_directory} directory"
+      rm -rf "./${build_directory}"
    fi
    echo " " 
    exit 1
 fi
 
-make -j ${threads} ${verbose}
-return_value=$?
-if [ $return_value -ne 0 ]
+make -j "${threads}" "${verbose[@]}" || return_value=$?
+if (( return_value != 0 ))
 then
-   echo " " 
-   echo " " 
+   echo " "
+   echo " "
    echo "-- Errors in build found"
-   echo " " 
+   echo " "
    exit 1
 fi
 
